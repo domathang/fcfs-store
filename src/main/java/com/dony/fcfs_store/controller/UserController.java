@@ -28,12 +28,12 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}")
-    public UserResponseDto getMyPage(@PathVariable Integer id) throws Exception{
+    public UserResponseDto getMyPage(@PathVariable Integer id) {
         return userService.myPage(id);
     }
 
     @PostMapping("/user")
-    public void createUser(@RequestBody UserRequestDto userDto) throws Exception{
+    public void createUser(@RequestBody UserRequestDto userDto) {
         userService.createUser(userDto);
     }
 }

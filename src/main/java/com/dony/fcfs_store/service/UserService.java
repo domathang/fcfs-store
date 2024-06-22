@@ -3,6 +3,8 @@ package com.dony.fcfs_store.service;
 import com.dony.fcfs_store.dto.UserRequestDto;
 import com.dony.fcfs_store.dto.UserResponseDto;
 import com.dony.fcfs_store.entity.User;
+import com.dony.fcfs_store.exception.CustomException;
+import com.dony.fcfs_store.exception.ErrorCode;
 import com.dony.fcfs_store.repository.UserRepository;
 import io.jsonwebtoken.io.Decoders;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,7 @@ public class UserService {
     @Value("${auth.symmetric.key}")
     private String symmetricKey;
 
-    public void createUser(UserRequestDto userDto) throws Exception {
+    public void createUser(UserRequestDto userDto) {
         // TODO: email 인증 확인
 
         String encryptedPassword = passwordEncoder.encode(userDto.getPassword());
@@ -46,7 +48,7 @@ public class UserService {
         userRepository.save(newUser);
     }
 
-    public UserResponseDto myPage(Integer id) throws Exception {
+    public UserResponseDto myPage(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow();
 
@@ -65,20 +67,27 @@ public class UserService {
         return new SecretKeySpec(keyBytes, ALGORITHM);
     }
 
-    private String encryptPersonalInfo(String field) throws Exception {
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
-        cipher.init(Cipher.ENCRYPT_MODE, getSecretKey());
-        byte[] bytes = cipher.doFinal(field.getBytes());
-        return Base64.getEncoder()
-                .encodeToString(bytes);
+    private String encryptPersonalInfo(String field) {
+        try {
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            cipher.init(Cipher.ENCRYPT_MODE, getSecretKey());
+            byte[] bytes = cipher.doFinal(field.getBytes());
+            return Base64.getEncoder().encodeToString(bytes);
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.SERVER_ERROR, "개인정보 암호화 중 에러");
+        }
     }
 
-    private String decryptPersonalInfo(String field) throws Exception {
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
-        cipher.init(Cipher.DECRYPT_MODE, getSecretKey());
-        byte[] decodedBytes = Base64.getDecoder()
-                .decode(field);
-        byte[] decryptedBytes = cipher.doFinal(decodedBytes);
-        return new String(decryptedBytes);
+    private String decryptPersonalInfo(String field) {
+        try {
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            cipher.init(Cipher.DECRYPT_MODE, getSecretKey());
+            byte[] decodedBytes = Base64.getDecoder()
+                    .decode(field);
+            byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+            return new String(decryptedBytes);
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.SERVER_ERROR, "개인정보 복호화 중 에러");
+        }
     }
 }
