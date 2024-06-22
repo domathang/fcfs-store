@@ -1,11 +1,21 @@
 package com.dony.fcfs_store.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "User")
+@Builder
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,5 +35,6 @@ public class User {
     private String imageUrl;
 
     @Column(name = "created_at")
-    private Date createdAt;
+    @CreatedDate
+    private LocalDateTime createdAt;
 }
