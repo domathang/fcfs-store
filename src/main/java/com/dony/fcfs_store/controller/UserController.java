@@ -1,10 +1,6 @@
 package com.dony.fcfs_store.controller;
 
-import com.dony.fcfs_store.config.JwtUtil;
-import com.dony.fcfs_store.dto.EmailRequestDto;
-import com.dony.fcfs_store.dto.UserRequestDto;
-import com.dony.fcfs_store.dto.UserResponseDto;
-import com.dony.fcfs_store.repository.UserRepository;
+import com.dony.fcfs_store.dto.*;
 import com.dony.fcfs_store.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -13,18 +9,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final JwtUtil jwtUtil;
-
     private final UserService userService;
 
-    @GetMapping("/token")
-    public String token() {
-        return jwtUtil.createToken(1);
-    }
-
-    @PostMapping("/email")
-    public void sendEmail(@RequestBody EmailRequestDto emailRequestDto) {
-        // TODO
+    @PostMapping("/login")
+    public TokenResponse login(@RequestBody LoginDto dto) {
+        return userService.login(dto);
     }
 
     @GetMapping("/user/{id}")

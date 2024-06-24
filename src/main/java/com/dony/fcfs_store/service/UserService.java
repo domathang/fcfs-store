@@ -1,5 +1,8 @@
 package com.dony.fcfs_store.service;
 
+import com.dony.fcfs_store.config.JwtUtil;
+import com.dony.fcfs_store.dto.LoginDto;
+import com.dony.fcfs_store.dto.TokenResponse;
 import com.dony.fcfs_store.dto.UserRequestDto;
 import com.dony.fcfs_store.dto.UserResponseDto;
 import com.dony.fcfs_store.entity.User;
@@ -22,6 +25,7 @@ import java.util.Base64;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailAvailableRepository emailAvailableRepository;
@@ -30,6 +34,14 @@ public class UserService {
 
     @Value("${auth.symmetric.key}")
     private String symmetricKey;
+
+    public TokenResponse login(LoginDto loginDto) {
+        User user = userRepository.findByEmail(encryptPersonalInfo(loginDto.getEmail()))
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "해당 이메일로 가입한 유저가 존재하지 않음"));
+        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword()))
+            throw new CustomException(ErrorCode.NOT_VALID_PASSWORD);
+        return new TokenResponse(jwtUtil.createToken(user.getId()));
+    }
 
     public void createUser(UserRequestDto userDto) {
         emailAvailableRepository.findById(userDto.getEmail())
