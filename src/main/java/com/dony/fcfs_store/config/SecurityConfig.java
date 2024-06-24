@@ -22,7 +22,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/token").permitAll()
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/token", "/auth", "/verify").permitAll()
                         .anyRequest().hasAuthority("USER"));
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

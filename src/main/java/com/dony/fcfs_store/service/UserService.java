@@ -5,6 +5,7 @@ import com.dony.fcfs_store.dto.UserResponseDto;
 import com.dony.fcfs_store.entity.User;
 import com.dony.fcfs_store.exception.CustomException;
 import com.dony.fcfs_store.exception.ErrorCode;
+import com.dony.fcfs_store.repository.EmailAvailableRepository;
 import com.dony.fcfs_store.repository.UserRepository;
 import io.jsonwebtoken.io.Decoders;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import java.util.Base64;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailAvailableRepository emailAvailableRepository;
 
     private final String ALGORITHM = "AES";
 
@@ -30,7 +32,8 @@ public class UserService {
     private String symmetricKey;
 
     public void createUser(UserRequestDto userDto) {
-        // TODO: email 인증 확인
+        emailAvailableRepository.findById(userDto.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_AUTHENTICATED));
 
         String encryptedPassword = passwordEncoder.encode(userDto.getPassword());
         String encryptedEmail = encryptPersonalInfo(userDto.getEmail());
