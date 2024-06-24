@@ -4,7 +4,9 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
 @NoArgsConstructor
@@ -13,4 +15,8 @@ import org.springframework.data.redis.core.RedisHash;
 public class TokenBlacklist {
     @Id
     private String id;
+    @Indexed
+    Integer userId;
+    @Setter
+    private Boolean available;
 }

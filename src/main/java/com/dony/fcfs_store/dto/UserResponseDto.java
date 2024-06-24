@@ -11,4 +11,5 @@ public class UserResponseDto {
     private String username;
     private String address;
     private String phone;
+    private String imageUrl;
 }

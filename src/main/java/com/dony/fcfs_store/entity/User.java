@@ -1,10 +1,7 @@
 package com.dony.fcfs_store.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -22,12 +19,15 @@ public class User {
 
     private String email;
 
+    @Setter
     private String password;
 
     private String username;
 
+    @Setter
     private String address;
 
+    @Setter
     private String phone;
 
     @Column(name = "image_url")
@@ -45,4 +45,5 @@ public class User {
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE)
     private List<CartProduct> cartProducts;
+
 }

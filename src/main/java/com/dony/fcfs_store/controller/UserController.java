@@ -21,13 +21,23 @@ public class UserController {
         userService.logout(token);
     }
 
-    @GetMapping("/user/{id}")
-    public UserResponseDto getMyPage(@PathVariable Integer id) {
-        return userService.myPage(id);
+    @GetMapping("/user/my")
+    public UserResponseDto getMyPage() {
+        return userService.myPage();
     }
 
     @PostMapping("/user")
     public void createUser(@RequestBody UserRequestDto userDto) {
         userService.createUser(userDto);
+    }
+
+    @PatchMapping("/user/my")
+    public void updateMyPage(@RequestBody UserRequestDto userDto) {
+        userService.updateMyPage(userDto);
+    }
+
+    @PatchMapping("/user/my/password")
+    public void updatePassword(@RequestBody UpdatePasswordDto dto) {
+        userService.updatePassword(dto);
     }
 }

@@ -1,21 +1,22 @@
 package com.dony.fcfs_store.service;
 
+import com.dony.fcfs_store.dto.*;
 import com.dony.fcfs_store.entity.redis.TokenBlacklist;
 import com.dony.fcfs_store.repository.redis.TokenBlacklistRepository;
+import com.dony.fcfs_store.util.AuthenticationFacade;
 import com.dony.fcfs_store.util.CryptoUtil;
 import com.dony.fcfs_store.util.JwtUtil;
-import com.dony.fcfs_store.dto.LoginDto;
-import com.dony.fcfs_store.dto.TokenResponse;
-import com.dony.fcfs_store.dto.UserRequestDto;
-import com.dony.fcfs_store.dto.UserResponseDto;
 import com.dony.fcfs_store.entity.User;
 import com.dony.fcfs_store.exception.CustomException;
 import com.dony.fcfs_store.exception.ErrorCode;
 import com.dony.fcfs_store.repository.redis.EmailAvailableRepository;
 import com.dony.fcfs_store.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class UserService {
     private final EmailAvailableRepository emailAvailableRepository;
     private final CryptoUtil cryptoUtil;
     private final TokenBlacklistRepository tokenBlacklistRepository;
+    private final AuthenticationFacade authenticationFacade;
 
 
     public TokenResponse login(LoginDto loginDto) {
@@ -35,11 +37,18 @@ public class UserService {
         if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword()))
             throw new CustomException(ErrorCode.NOT_VALID_PASSWORD);
 
-        return new TokenResponse(jwtUtil.createToken(user.getId()));
+        String token = jwtUtil.createToken(user.getId());
+
+        tokenBlacklistRepository.save(new TokenBlacklist(token, user.getId(), true));
+
+        return new TokenResponse(token);
     }
 
+    @Transactional
     public void logout(String token) {
-        tokenBlacklistRepository.save(new TokenBlacklist(token));
+        TokenBlacklist blacklist =
+                tokenBlacklistRepository.findById(token).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        blacklist.setAvailable(false);
     }
 
     public void createUser(UserRequestDto userDto) {
@@ -62,17 +71,35 @@ public class UserService {
         userRepository.save(newUser);
     }
 
-    public UserResponseDto myPage(Integer id) {
-        User user = userRepository.findById(id)
-                .orElseThrow();
-
-        // TODO
+    public UserResponseDto myPage() {
+        User user = authenticationFacade.getLoggedInUser();
 
         return UserResponseDto.builder()
                 .address(cryptoUtil.decrypt(user.getAddress()))
                 .email(cryptoUtil.decrypt(user.getEmail()))
                 .phone(cryptoUtil.decrypt(user.getPhone()))
                 .username(cryptoUtil.decrypt(user.getUsername()))
+                .imageUrl(user.getImageUrl())
                 .build();
+    }
+
+    @Transactional
+    public void updateMyPage(UserRequestDto dto) {
+        User user = authenticationFacade.getLoggedInUser();
+        if (dto.getAddress() != null)
+            user.setAddress(cryptoUtil.encrypt(dto.getAddress()));
+        if (dto.getAddress() != null)
+            user.setPhone(cryptoUtil.encrypt(dto.getPhone()));
+    }
+
+    @Transactional
+    public void updatePassword(UpdatePasswordDto dto) {
+        User user = authenticationFacade.getLoggedInUser();
+        if (passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
+            user.setPassword(dto.getNewPassword());
+            tokenBlacklistRepository.findAllByUserId(user.getId())
+                    .forEach(tokenBlacklist -> tokenBlacklist.setAvailable(false));
+        }
+
     }
 }
