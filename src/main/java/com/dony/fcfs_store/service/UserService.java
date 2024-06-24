@@ -5,7 +5,7 @@ import com.dony.fcfs_store.dto.UserResponseDto;
 import com.dony.fcfs_store.entity.User;
 import com.dony.fcfs_store.exception.CustomException;
 import com.dony.fcfs_store.exception.ErrorCode;
-import com.dony.fcfs_store.repository.EmailAvailableRepository;
+import com.dony.fcfs_store.repository.redis.EmailAvailableRepository;
 import com.dony.fcfs_store.repository.UserRepository;
 import io.jsonwebtoken.io.Decoders;
 import lombok.RequiredArgsConstructor;

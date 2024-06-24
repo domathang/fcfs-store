@@ -4,8 +4,8 @@ import com.dony.fcfs_store.entity.redis.EmailAvailable;
 import com.dony.fcfs_store.entity.redis.Token;
 import com.dony.fcfs_store.exception.CustomException;
 import com.dony.fcfs_store.exception.ErrorCode;
-import com.dony.fcfs_store.repository.EmailAvailableRepository;
-import com.dony.fcfs_store.repository.TokenRepository;
+import com.dony.fcfs_store.repository.redis.EmailAvailableRepository;
+import com.dony.fcfs_store.repository.redis.TokenRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class AuthService {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setTo(to);
+
 
             String rand = UUID.randomUUID()
                     .toString()
@@ -40,6 +40,8 @@ public class AuthService {
 
             String subject = "이메일 인증";
             String body = "Please click the link to verify your email: " + host + "/verify?token=" + rand;
+
+            helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(body);
 
