@@ -77,10 +77,8 @@ public class JwtUtil {
     }
 
     public String resolveToken(String token) {
-        if (token.startsWith("Bearer ")) {
-            return token.substring(7);
-        }
-        return null;
+        if (token == null || !token.startsWith("Bearer ")) return null;
+        else return token.substring(7);
     }
 
 }
