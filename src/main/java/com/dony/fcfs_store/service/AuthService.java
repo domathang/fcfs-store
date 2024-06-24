@@ -1,12 +1,12 @@
 package com.dony.fcfs_store.service;
 
 import com.dony.fcfs_store.entity.redis.EmailAvailable;
-import com.dony.fcfs_store.entity.redis.Token;
+import com.dony.fcfs_store.entity.redis.AuthCode;
 import com.dony.fcfs_store.exception.CustomException;
 import com.dony.fcfs_store.exception.ErrorCode;
 import com.dony.fcfs_store.repository.UserRepository;
 import com.dony.fcfs_store.repository.redis.EmailAvailableRepository;
-import com.dony.fcfs_store.repository.redis.TokenRepository;
+import com.dony.fcfs_store.repository.redis.AuthCodeRepository;
 import com.dony.fcfs_store.util.CryptoUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -23,7 +23,7 @@ import java.util.UUID;
 public class AuthService {
 
     private final JavaMailSender javaMailSender;
-    private final TokenRepository tokenRepository;
+    private final AuthCodeRepository authCodeRepository;
     private final EmailAvailableRepository emailAvailableRepository;
     private final UserRepository userRepository;
     private final CryptoUtil cryptoUtil;
@@ -53,16 +53,16 @@ public class AuthService {
 
             javaMailSender.send(message);
 
-            tokenRepository.save(new Token(to, rand));
+            authCodeRepository.save(new AuthCode(to, rand));
         } catch (MessagingException e) {
             throw new CustomException(ErrorCode.MESSAGING_ERROR);
         }
     }
 
-    public void verify(String authToken) {
-        Token token = tokenRepository.findByToken(authToken)
+    public void verify(String authCode) {
+        AuthCode code = authCodeRepository.findByCode(authCode)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
-        emailAvailableRepository.save(new EmailAvailable(token.getId()));
+        emailAvailableRepository.save(new EmailAvailable(code.getId()));
     }
 }

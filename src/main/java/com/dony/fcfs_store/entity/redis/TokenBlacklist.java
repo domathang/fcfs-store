@@ -5,15 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash(value = "token", timeToLive = 300)
-public class Token {
+@RedisHash(value = "blacklist", timeToLive = 86400)
+public class TokenBlacklist {
     @Id
     private String id;
-    @Indexed
-    private String token;
 }

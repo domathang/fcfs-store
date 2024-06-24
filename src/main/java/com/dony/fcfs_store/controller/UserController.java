@@ -16,6 +16,11 @@ public class UserController {
         return userService.login(dto);
     }
 
+    @DeleteMapping("/logout")
+    public void logout(@RequestHeader("Authorization") String token) {
+        userService.logout(token);
+    }
+
     @GetMapping("/user/{id}")
     public UserResponseDto getMyPage(@PathVariable Integer id) {
         return userService.myPage(id);

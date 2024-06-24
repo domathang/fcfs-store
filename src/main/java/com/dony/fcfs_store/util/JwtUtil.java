@@ -1,7 +1,10 @@
 package com.dony.fcfs_store.util;
 
 import com.dony.fcfs_store.entity.User;
+import com.dony.fcfs_store.exception.CustomException;
+import com.dony.fcfs_store.exception.ErrorCode;
 import com.dony.fcfs_store.repository.UserRepository;
+import com.dony.fcfs_store.repository.redis.TokenBlacklistRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -28,6 +31,8 @@ public class JwtUtil {
 
     private final UserRepository userRepository;
 
+    private final TokenBlacklistRepository tokenBlacklistRepository;
+
     public SecretKey getSecretKey() {
         byte[] keyBytes = Decoders.BASE64.decode(keyStr);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -47,6 +52,8 @@ public class JwtUtil {
     }
 
     public Authentication getAuthentication(String token) {
+        if (tokenBlacklistRepository.findById(token).isPresent())
+            throw new CustomException(ErrorCode.UNAUTHORIZED, "다시 로그인해서 올바른 토큰을 받아야함");
         Integer id = getId(token);
         Optional<User> user = userRepository.findById(id);
         return user.map(value -> new UsernamePasswordAuthenticationToken(user, "", getAuthorities()))
