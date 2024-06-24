@@ -76,4 +76,11 @@ public class JwtUtil {
         return Integer.parseInt(payload.getSubject());
     }
 
+    public String resolveToken(String token) {
+        if (token.startsWith("Bearer ")) {
+            return token.substring(7);
+        }
+        return null;
+    }
+
 }
