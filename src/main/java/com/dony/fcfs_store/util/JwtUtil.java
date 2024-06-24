@@ -1,4 +1,4 @@
-package com.dony.fcfs_store.config;
+package com.dony.fcfs_store.util;
 
 import com.dony.fcfs_store.entity.User;
 import com.dony.fcfs_store.repository.UserRepository;

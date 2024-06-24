@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum ErrorCode {
+    EMAIL_DUPLICATED(409, "이미 이메일로 가입된 계정이 존재함"),
     NOT_VALID_PASSWORD(400, "비밀번호가 잘못됨"),
     EMAIL_NOT_AUTHENTICATED(400, "이메일이 인증되지 않음"),
     MESSAGING_ERROR(500, "인증 이메일 전송 중 오류 발생"),
