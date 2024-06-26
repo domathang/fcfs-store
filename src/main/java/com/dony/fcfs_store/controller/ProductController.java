@@ -1,7 +1,7 @@
 package com.dony.fcfs_store.controller;
 
 import com.dony.fcfs_store.dto.request.CartOrderRequestDto;
-import com.dony.fcfs_store.dto.request.CartProductRequestDto;
+import com.dony.fcfs_store.dto.request.QuantityRequestDto;
 import com.dony.fcfs_store.dto.request.ProductRequestDto;
 import com.dony.fcfs_store.dto.response.ProductResponseDto;
 import com.dony.fcfs_store.service.ProductService;
@@ -31,17 +31,32 @@ public class ProductController {
     }
 
     @PostMapping("/product/{id}/cart")
-    public void addToCart(@PathVariable Integer id, @RequestBody CartProductRequestDto dto) {
+    public void addToCart(@PathVariable Integer id, @RequestBody QuantityRequestDto dto) {
         productService.addToCart(id, dto);
     }
 
     @PostMapping("/product/{id}/order")
-    public void orderProduct(@PathVariable Integer id, @RequestBody CartProductRequestDto dto) {
+    public void orderProduct(@PathVariable Integer id, @RequestBody QuantityRequestDto dto) {
         productService.createOrder(id, dto);
     }
 
     @PostMapping("/cart/order")
     public void orderAllCartProduct(@RequestBody CartOrderRequestDto dto) {
         productService.createCartOrder(dto);
+    }
+
+    @GetMapping("/cart")
+    public List<ProductResponseDto> getMyCartProduct() {
+        return productService.getMyProductList();
+    }
+
+    @PatchMapping("/cart/{cartProductId}")
+    public void changeCartProductQuantity(@PathVariable Integer cartProductId, @RequestBody QuantityRequestDto dto) {
+        productService.changeCartProductQuantity(cartProductId, dto);
+    }
+
+    @DeleteMapping("/cart/{cartProductId}")
+    public void deleteCartProduct(@PathVariable Integer cartProductId) {
+        productService.deleteCartProduct(cartProductId);
     }
 }

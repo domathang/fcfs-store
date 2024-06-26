@@ -1,10 +1,7 @@
 package com.dony.fcfs_store.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "Cart_product")
@@ -25,6 +22,7 @@ public class CartProduct {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @Setter
     private Integer quantity;
 
     @Column(columnDefinition = "TINYINT(1) default 1")

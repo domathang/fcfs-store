@@ -2,7 +2,7 @@ package com.dony.fcfs_store.service;
 
 import com.dony.fcfs_store.constant.OrderStatus;
 import com.dony.fcfs_store.dto.request.CartOrderRequestDto;
-import com.dony.fcfs_store.dto.request.CartProductRequestDto;
+import com.dony.fcfs_store.dto.request.QuantityRequestDto;
 import com.dony.fcfs_store.dto.request.ProductRequestDto;
 import com.dony.fcfs_store.dto.response.ProductResponseDto;
 import com.dony.fcfs_store.entity.*;
@@ -63,7 +63,7 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
-    public void addToCart(Integer productId, CartProductRequestDto dto) {
+    public void addToCart(Integer productId, QuantityRequestDto dto) {
         User loggedinUser = authenticationFacade.getLoggedInUser();
         Product product = findProductById(productId);
         cartProductRepository.save(CartProduct.builder()
@@ -74,7 +74,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void createOrder(Integer productId, CartProductRequestDto dto) {
+    public void createOrder(Integer productId, QuantityRequestDto dto) {
         User loggedinUser = authenticationFacade.getLoggedInUser();
         Product product = findProductById(productId);
         //TODO: 재고가 남아있는지 확인
@@ -100,13 +100,13 @@ public class ProductService {
                 .status(OrderStatus.ORDER_COMPLETED.status)
                 .build());
 
-        List<Integer> selectedProductIdList = dto.getProductIdList();
+        List<Integer> selectedCartProductIdList = dto.getCartProductIdList();
 
         List<CartProduct> cartProducts = cartProductRepository.findByCustomerId(loggedinUser.getId()).stream().filter(
-                cartProduct -> selectedProductIdList.contains(cartProduct.getProduct().getId())
+                cartProduct -> selectedCartProductIdList.contains(cartProduct.getId())
         ).toList();
 
-        if (selectedProductIdList.size() != cartProducts.size())
+        if (selectedCartProductIdList.size() > cartProducts.size())
             throw new CustomException(ErrorCode.BAD_REQUEST, "요청의 장바구니 상품 ID 리스트가 잘못됨");
 
         cartProducts.forEach(cartProduct -> {
@@ -124,6 +124,16 @@ public class ProductService {
         cartProducts.forEach(cartProduct -> {
             cartProductRepository.deleteById(cartProduct.getId());
         });
+    }
+
+    public void changeCartProductQuantity(Integer cartProductId, QuantityRequestDto dto) {
+        CartProduct cartProduct = cartProductRepository.findById(cartProductId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        cartProduct.setQuantity(dto.getQuantity());
+    }
+
+    public void deleteCartProduct(Integer cartProductId) {
+        cartProductRepository.deleteById(cartProductId);
     }
 
     private Product findProductById(Integer id) {

@@ -6,5 +6,5 @@ import java.util.List;
 
 @Getter
 public class CartOrderRequestDto {
-    private List<Integer> productIdList;
+    private List<Integer> cartProductIdList;
 }
