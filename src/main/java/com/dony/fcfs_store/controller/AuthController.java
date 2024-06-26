@@ -1,6 +1,6 @@
 package com.dony.fcfs_store.controller;
 
-import com.dony.fcfs_store.dto.EmailRequestDto;
+import com.dony.fcfs_store.dto.request.EmailRequestDto;
 import com.dony.fcfs_store.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

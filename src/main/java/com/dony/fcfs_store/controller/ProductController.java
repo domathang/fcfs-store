@@ -1,9 +1,9 @@
 package com.dony.fcfs_store.controller;
 
-import com.dony.fcfs_store.dto.CartOrderRequestDto;
-import com.dony.fcfs_store.dto.CartProductRequestDto;
-import com.dony.fcfs_store.dto.ProductRequestDto;
-import com.dony.fcfs_store.dto.ProductResponseDto;
+import com.dony.fcfs_store.dto.request.CartOrderRequestDto;
+import com.dony.fcfs_store.dto.request.CartProductRequestDto;
+import com.dony.fcfs_store.dto.request.ProductRequestDto;
+import com.dony.fcfs_store.dto.response.ProductResponseDto;
 import com.dony.fcfs_store.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

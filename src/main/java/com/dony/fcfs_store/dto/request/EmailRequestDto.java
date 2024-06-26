@@ -1,4 +1,4 @@
-package com.dony.fcfs_store.dto;
+package com.dony.fcfs_store.dto.request;
 
 import jakarta.validation.constraints.Email;
 import lombok.Getter;
