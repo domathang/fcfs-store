@@ -16,6 +16,7 @@ public class ProductResponseDto {
     private String imageUrl;
     private Integer stock;
     private String detail;
+    private Boolean isOpen;
     private LocalDateTime saleStartTime;
     private LocalDateTime registeredAt;
 
@@ -28,5 +29,6 @@ public class ProductResponseDto {
         this.detail = product.getDetail();
         this.saleStartTime = product.getSaleStartTime();
         this.registeredAt = product.getRegisteredAt();
+        this.isOpen = LocalDateTime.now().isBefore(saleStartTime);
     }
 }

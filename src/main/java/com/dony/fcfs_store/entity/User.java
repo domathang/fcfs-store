@@ -43,7 +43,7 @@ public class User {
     @OneToMany(mappedBy = "owner", cascade = CascadeType.PERSIST)
     private List<Product> products;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE)
     private List<CartProduct> cartProducts;
 
 }

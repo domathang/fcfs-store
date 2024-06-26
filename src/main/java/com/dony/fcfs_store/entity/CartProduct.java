@@ -18,8 +18,8 @@ public class CartProduct {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
+    @JoinColumn(name = "customer_id")
+    private User customer;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -27,7 +27,7 @@ public class CartProduct {
 
     private Integer quantity;
 
-    @Column(columnDefinition = "TINYINT(1) default 0")
+    @Column(columnDefinition = "TINYINT(1) default 1")
     private Boolean purchaseAvailable;
 
 }
