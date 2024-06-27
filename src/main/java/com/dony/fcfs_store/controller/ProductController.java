@@ -1,6 +1,5 @@
 package com.dony.fcfs_store.controller;
 
-import com.dony.fcfs_store.dto.request.CartOrderRequestDto;
 import com.dony.fcfs_store.dto.request.QuantityRequestDto;
 import com.dony.fcfs_store.dto.request.ProductRequestDto;
 import com.dony.fcfs_store.dto.response.ProductResponseDto;
@@ -33,16 +32,6 @@ public class ProductController {
     @PostMapping("/product/{id}/cart")
     public void addToCart(@PathVariable Integer id, @RequestBody QuantityRequestDto dto) {
         productService.addToCart(id, dto);
-    }
-
-    @PostMapping("/product/{id}/order")
-    public void orderProduct(@PathVariable Integer id, @RequestBody QuantityRequestDto dto) {
-        productService.createOrder(id, dto);
-    }
-
-    @PostMapping("/cart/order")
-    public void orderAllCartProduct(@RequestBody CartOrderRequestDto dto) {
-        productService.createCartOrder(dto);
     }
 
     @GetMapping("/cart")

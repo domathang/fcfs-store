@@ -1,19 +1,16 @@
 package com.dony.fcfs_store.service;
 
-import com.dony.fcfs_store.constant.OrderStatus;
-import com.dony.fcfs_store.dto.request.CartOrderRequestDto;
-import com.dony.fcfs_store.dto.request.QuantityRequestDto;
 import com.dony.fcfs_store.dto.request.ProductRequestDto;
+import com.dony.fcfs_store.dto.request.QuantityRequestDto;
 import com.dony.fcfs_store.dto.response.ProductResponseDto;
-import com.dony.fcfs_store.entity.*;
+import com.dony.fcfs_store.entity.CartProduct;
+import com.dony.fcfs_store.entity.Product;
+import com.dony.fcfs_store.entity.User;
 import com.dony.fcfs_store.exception.CustomException;
 import com.dony.fcfs_store.exception.ErrorCode;
 import com.dony.fcfs_store.repository.CartProductRepository;
-import com.dony.fcfs_store.repository.OrderProductRepository;
-import com.dony.fcfs_store.repository.OrderRepository;
 import com.dony.fcfs_store.repository.ProductRepository;
 import com.dony.fcfs_store.util.AuthenticationFacade;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +24,6 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final AuthenticationFacade authenticationFacade;
     private final CartProductRepository cartProductRepository;
-    private final OrderRepository orderRepository;
-    private final OrderProductRepository orderProductRepository;
 
     public void registerProduct(ProductRequestDto dto) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
@@ -71,59 +66,6 @@ public class ProductService {
                 .quantity(dto.getQuantity())
                 .customer(loggedinUser)
                 .build());
-    }
-
-    @Transactional
-    public void createOrder(Integer productId, QuantityRequestDto dto) {
-        User loggedinUser = authenticationFacade.getLoggedInUser();
-        Product product = findProductById(productId);
-        //TODO: 재고가 남아있는지 확인
-        Order order = orderRepository.save(Order.builder()
-                .customer(loggedinUser)
-                .status(OrderStatus.ORDER_COMPLETED.status)
-                .build());
-        orderProductRepository.save(OrderProduct.builder()
-                .order(order)
-                .product(product)
-                .quantity(dto.getQuantity())
-                .totalPrice(product.getPrice() * dto.getQuantity())
-                .build());
-        //TODO: 남은 Product의 재고 처리
-    }
-
-    @Transactional
-    public void createCartOrder(CartOrderRequestDto dto) {
-        User loggedinUser = authenticationFacade.getLoggedInUser();
-
-        Order order = orderRepository.save(Order.builder()
-                .customer(loggedinUser)
-                .status(OrderStatus.ORDER_COMPLETED.status)
-                .build());
-
-        List<Integer> selectedCartProductIdList = dto.getCartProductIdList();
-
-        List<CartProduct> cartProducts = cartProductRepository.findByCustomerId(loggedinUser.getId()).stream().filter(
-                cartProduct -> selectedCartProductIdList.contains(cartProduct.getId())
-        ).toList();
-
-        if (selectedCartProductIdList.size() > cartProducts.size())
-            throw new CustomException(ErrorCode.BAD_REQUEST, "요청의 장바구니 상품 ID 리스트가 잘못됨");
-
-        cartProducts.forEach(cartProduct -> {
-                    //TODO: 재고가 남아있는지 확인
-                    orderProductRepository.save(OrderProduct.builder()
-                            .order(order)
-                            .product(cartProduct.getProduct())
-                            .quantity(cartProduct.getQuantity())
-                            .totalPrice(cartProduct.getProduct()
-                                    .getPrice() * cartProduct.getQuantity())
-                            .build());
-                    //TODO: 남은 Product의 재고 처리
-                });
-
-        cartProducts.forEach(cartProduct -> {
-            cartProductRepository.deleteById(cartProduct.getId());
-        });
     }
 
     public void changeCartProductQuantity(Integer cartProductId, QuantityRequestDto dto) {

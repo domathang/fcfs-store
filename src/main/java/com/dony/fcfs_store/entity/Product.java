@@ -1,10 +1,7 @@
 package com.dony.fcfs_store.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -27,6 +24,7 @@ public class Product {
 
     private String image_url;
 
+    @Setter
     private Integer stock;
 
     @CreatedDate

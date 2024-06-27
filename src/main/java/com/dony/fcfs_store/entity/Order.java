@@ -2,10 +2,7 @@ package com.dony.fcfs_store.entity;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -30,17 +27,11 @@ public class Order {
     @JoinColumn(name = "customer_id")
     private User customer;
 
+    @Setter
     private String status;
 
-    @Column(columnDefinition = "TINYINT(1) default 0")
-    private Boolean isDeliveryCompleted;
-
+    @Setter
     private LocalDateTime deliveryCompletedAt;
-
-    @Column(columnDefinition = "TINYINT(1) default 0")
-    private Boolean isReturnCompleted;
-
-    private LocalDateTime returnCompletedAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
     private List<OrderProduct> orderProducts;
