@@ -113,7 +113,7 @@ public class OrderService {
         return OrderStatusResponse.builder()
                 .orderId(order.getId())
                 .orderedAt(order.getOrderedAt())
-                .isDeliveryCompleted(order.getStatus())
+                .status(order.getStatus())
                 .orderProducts(orderProductList)
                 .build();
     }

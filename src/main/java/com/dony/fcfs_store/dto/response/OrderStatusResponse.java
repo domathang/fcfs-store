@@ -13,6 +13,6 @@ import java.util.List;
 public class OrderStatusResponse {
     private Integer orderId;
     private List<OrderProductResponse> orderProducts;
-    private String isDeliveryCompleted;
+    private String status;
     private LocalDateTime orderedAt;
 }

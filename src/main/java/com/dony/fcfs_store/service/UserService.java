@@ -90,7 +90,7 @@ public class UserService {
         User user = authenticationFacade.getLoggedInUser();
         if (dto.getAddress() != null)
             user.setAddress(cryptoUtil.encrypt(dto.getAddress()));
-        if (dto.getAddress() != null)
+        if (dto.getPhone() != null)
             user.setPhone(cryptoUtil.encrypt(dto.getPhone()));
     }
 

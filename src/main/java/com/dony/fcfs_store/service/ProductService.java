@@ -2,6 +2,7 @@ package com.dony.fcfs_store.service;
 
 import com.dony.fcfs_store.dto.request.ProductRequestDto;
 import com.dony.fcfs_store.dto.request.QuantityRequestDto;
+import com.dony.fcfs_store.dto.response.CartProductResponse;
 import com.dony.fcfs_store.dto.response.ProductResponseDto;
 import com.dony.fcfs_store.entity.CartProduct;
 import com.dony.fcfs_store.entity.Product;
@@ -38,11 +39,12 @@ public class ProductService {
                 .build());
     }
 
-    public List<ProductResponseDto> getMyProductList() {
+    public List<CartProductResponse> getMyCartProduct() {
         Integer loggedInUserId = authenticationFacade.getLoggedInUserId();
-        return productRepository.findAllByOwnerId(loggedInUserId)
+
+        return cartProductRepository.findByCustomerId(loggedInUserId)
                 .stream()
-                .map(ProductResponseDto::new)
+                .map(cartProduct -> new CartProductResponse(cartProduct.getProduct(), cartProduct.getQuantity()))
                 .toList();
     }
 
