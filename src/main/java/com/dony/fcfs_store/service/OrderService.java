@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -90,12 +91,12 @@ public class OrderService {
 
         if (order.getOrderedAt()
                 .plusDays(2)
-                .isAfter(LocalDateTime.now())) {
+                .isBefore(LocalDateTime.now())) {
             order.setStatus(OrderStatus.DELIVERY_COMPLETE.status);
             order.setDeliveryCompletedAt(LocalDateTime.now());
         } else if (order.getOrderedAt()
                 .plusDays(1)
-                .isAfter(LocalDateTime.now())) {
+                .isBefore(LocalDateTime.now())) {
             order.setStatus(OrderStatus.DELIVERING.status);
         }
 
@@ -125,7 +126,7 @@ public class OrderService {
 
         if (order.getOrderedAt()
                 .plusDays(1)
-                .isAfter(LocalDateTime.now()))
+                .isBefore(LocalDateTime.now()))
             throw new CustomException(ErrorCode.BAD_REQUEST, "배송이 시작된 이후에는 주문을 취소할 수 없음");
 
         order.setStatus(OrderStatus.ORDER_CANCEL.status);
@@ -154,9 +155,10 @@ public class OrderService {
         }
 
         if (order.getStatus().equals(OrderStatus.DELIVERY_COMPLETE.status) &&
-                order.getDeliveryCompletedAt().isBefore(LocalDateTime.now().plusDays(1))) {
+                order.getDeliveryCompletedAt().plusDays(1).isAfter(LocalDateTime.now())) {
             order.getOrderProducts().forEach(orderProduct -> {
-                if (orderProduct.getProduct().getId() == productId) {
+                if (Objects.equals(orderProduct.getProduct()
+                        .getId(), productId)) {
                     orderProduct.setStatus(OrderProductStatus.RETURN_ACCEPTED.status);
                     orderProduct.setReturnAcceptedAt(LocalDateTime.now());
                 }
