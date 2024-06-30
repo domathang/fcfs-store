@@ -1,4 +1,4 @@
-package com.dony.fcfs_store.service;
+package com.dony.fcfs_store.controller;
 
 import com.dony.fcfs_store.FcfsStoreApplication;
 import com.dony.fcfs_store.dto.request.LoginDto;
@@ -161,8 +161,6 @@ public class UserControllerTest {
     @Test
     public void testUpdatePassword() throws Exception {
         UpdatePasswordDto passwordDto = new UpdatePasswordDto("newpassword", "password");
-
-        tokenBlacklistRepository.save(new TokenBlacklist(token, testUser.getId(), true));
 
         mockMvc.perform(patch("/user/my/password")
                         .header("Authorization", "Bearer " + token)

@@ -25,7 +25,7 @@ public class Product {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Setter
+    @Setter //TODO: 삭제
     private Integer stock;
 
     @CreatedDate
