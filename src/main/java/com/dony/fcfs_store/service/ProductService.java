@@ -31,7 +31,7 @@ public class ProductService {
         productRepository.save(Product.builder()
                 .owner(authenticationFacade.getLoggedInUser())
                 .detail(dto.getDetail())
-                .image_url(dto.getImageUrl())
+                .imageUrl(dto.getImageUrl())
                 .name(dto.getName())
                 .saleStartTime(LocalDateTime.parse(dto.getSaleStartTime(), dateTimeFormatter))
                 .price(dto.getPrice())

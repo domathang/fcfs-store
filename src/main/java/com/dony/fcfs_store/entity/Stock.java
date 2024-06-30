@@ -1,29 +1,25 @@
 package com.dony.fcfs_store.entity;
 
+
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
-@Table(name = "Cart_product")
+@Table(name = "Stock")
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartProduct {
+public class Stock {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private User customer;
+    @Setter
+    private Integer stock;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "product_id")
     private Product product;
-
-    @Setter
-    private Integer quantity;
-
 }

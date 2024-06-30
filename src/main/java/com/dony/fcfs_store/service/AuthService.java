@@ -32,7 +32,7 @@ public class AuthService {
     private String host;
 
     public void sendEmail(String to) {
-        if (userRepository.findByEmail(cryptoUtil.encrypt(to)).isEmpty())
+        if (userRepository.findByEmail(cryptoUtil.encrypt(to)).isPresent())
             throw new CustomException(ErrorCode.EMAIL_DUPLICATED);
         try {
             MimeMessage message = javaMailSender.createMimeMessage();

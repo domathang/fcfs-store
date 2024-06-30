@@ -22,12 +22,14 @@ public class Product {
 
     private Integer price;
 
-    private String image_url;
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @Setter
     private Integer stock;
 
     @CreatedDate
+    @Column(name = "registered_at")
     private LocalDateTime registeredAt;
 
     @ManyToOne
@@ -36,7 +38,11 @@ public class Product {
 
     private String detail;
 
+    @Column(name = "sale_start_time")
     private LocalDateTime saleStartTime;
+
+//    @OneToOne(mappedBy = "product")
+//    private Stock stock;
 
     @OneToMany(mappedBy = "product")
     private List<OrderProduct> orderProducts;

@@ -24,7 +24,7 @@ public class ProductResponseDto {
         this.id = product.getId();
         this.name = product.getName();
         this.price = product.getPrice();
-        this.imageUrl = product.getImage_url();
+        this.imageUrl = product.getImageUrl();
         this.stock = product.getStock();
         this.detail = product.getDetail();
         this.saleStartTime = product.getSaleStartTime();

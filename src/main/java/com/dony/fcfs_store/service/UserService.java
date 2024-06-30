@@ -32,6 +32,7 @@ public class UserService {
     private final AuthenticationFacade authenticationFacade;
 
 
+    @Transactional
     public TokenResponse login(LoginDto loginDto) {
         User user = userRepository.findByEmail(cryptoUtil.encrypt(loginDto.getEmail()))
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "해당 이메일로 가입한 유저가 존재하지 않음"));
@@ -48,9 +49,11 @@ public class UserService {
 
     @Transactional
     public void logout(String token) {
-        TokenBlacklist blacklist =
-                tokenBlacklistRepository.findById(token).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        token = jwtUtil.resolveToken(token);
+        TokenBlacklist blacklist = tokenBlacklistRepository.findById(token)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
         blacklist.setAvailable(false);
+        tokenBlacklistRepository.save(blacklist);
     }
 
     public void createUser(UserRequestDto userDto) {
@@ -100,8 +103,13 @@ public class UserService {
         if (passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
             user.setPassword(dto.getNewPassword());
             tokenBlacklistRepository.findAllByUserId(user.getId())
-                    .forEach(tokenBlacklist -> tokenBlacklist.setAvailable(false));
+                    .forEach(tokenBlacklist -> {
+                        tokenBlacklist.setAvailable(false);
+                        tokenBlacklistRepository.save(tokenBlacklist);
+                    });
         }
-
+        else {
+            throw new CustomException(ErrorCode.NOT_VALID_PASSWORD);
+        }
     }
 }

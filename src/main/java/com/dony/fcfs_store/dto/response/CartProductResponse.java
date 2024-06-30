@@ -24,7 +24,7 @@ public class CartProductResponse {
         this.name = product.getName();
         this.price = product.getPrice();
         this.quantity = quantity;
-        this.imageUrl = product.getImage_url();
+        this.imageUrl = product.getImageUrl();
         this.saleStartTime = product.getSaleStartTime();
     }
 }

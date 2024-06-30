@@ -1,6 +1,7 @@
 package com.dony.fcfs_store.util;
 
 import com.dony.fcfs_store.entity.User;
+import com.dony.fcfs_store.entity.redis.TokenBlacklist;
 import com.dony.fcfs_store.exception.CustomException;
 import com.dony.fcfs_store.exception.ErrorCode;
 import com.dony.fcfs_store.repository.UserRepository;
@@ -52,12 +53,14 @@ public class JwtUtil {
     }
 
     public Authentication getAuthentication(String token) {
-        if (tokenBlacklistRepository.findById(token).isPresent())
-            throw new CustomException(ErrorCode.UNAUTHORIZED, "다시 로그인해서 올바른 토큰을 받아야함");
-        Integer id = getId(token);
-        Optional<User> user = userRepository.findById(id);
-        return user.map(value -> new UsernamePasswordAuthenticationToken(user, "", getAuthorities()))
-                .orElseGet(() -> new UsernamePasswordAuthenticationToken(null, "", null));
+        Optional<TokenBlacklist> optionalTokenBlacklist = tokenBlacklistRepository.findById(token);
+        if (optionalTokenBlacklist.isPresent() && optionalTokenBlacklist.get().getAvailable()) {
+            Integer id = getId(token);
+            User user = userRepository.findById(id).orElseThrow();
+            return new UsernamePasswordAuthenticationToken(user, "", getAuthorities());
+        }
+        else
+            return new UsernamePasswordAuthenticationToken(null, "", null);
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities() {

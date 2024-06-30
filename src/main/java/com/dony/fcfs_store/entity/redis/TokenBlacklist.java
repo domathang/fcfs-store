@@ -16,7 +16,7 @@ public class TokenBlacklist {
     @Id
     private String id;
     @Indexed
-    Integer userId;
+    private Integer userId;
     @Setter
     private Boolean available;
 }
