@@ -30,6 +30,6 @@ replay_pid*
 build/
 
 application.properties
-application.*y*ml
+application*.*y*ml
 
 !gradle-wrapper.jar
