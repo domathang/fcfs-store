@@ -1,17 +1,77 @@
 version: '3.1'
 
 services:
-  db:
+  user-service:
+    build:
+      context: .
+      dockerfile: ./module-user/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      MYSQL_DATABASE: 'userDB'
+    depends_on:
+      - user-database
+
+  product-service:
+    build:
+      context: .
+      dockerfile: ./module-product/Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      MYSQL_DATABASE: 'productDB'
+    depends_on:
+      - product-database
+
+  order-service:
+    build:
+      context: .
+      dockerfile: ./module-order/Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      MYSQL_DATABASE: 'orderDB'
+    depends_on:
+      - order-database
+
+
+  user-database:
     image: mysql:latest
     environment:
-      MYSQL_DATABASE: 'exampleDB'
+      MYSQL_DATABASE: 'userDB'
       MYSQL_USER: 'user'
       MYSQL_PASSWORD: 'password'
       MYSQL_ROOT_PASSWORD: 'rootpassword'
     ports:
       - "3306:3306"
     volumes:
-      - 'mysqldata:/var/lib/mysql'
+      - 'usermysqldata:/var/lib/mysql'
+
+  product-database:
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: 'productDB'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'rootpassword'
+    ports:
+      - "3307:3306"
+    volumes:
+      - 'productmysqldata:/var/lib/mysql'
+
+
+  order-database:
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: 'orderDB'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'rootpassword'
+    ports:
+      - "3308:3306"
+    volumes:
+      - 'ordermysqldata:/var/lib/mysql'
+
   redis:
     image: redis:latest
     ports:
@@ -20,5 +80,7 @@ services:
       - 'redisdata:/redis/data'
 
 volumes:
-  mysqldata:
+  usermysqldata:
+  productmysqldata:
+  ordermysqldata:
   redisdata:

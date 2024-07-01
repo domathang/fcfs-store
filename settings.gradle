@@ -1,1 +1,5 @@
 rootProject.name = 'fcfs-store'
+include 'module-user'
+include 'module-product'
+include 'module-order'
+
