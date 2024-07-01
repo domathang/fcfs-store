@@ -1,9 +1,6 @@
 package com.dony.fcfs_store.util;
 
 import com.dony.fcfs_store.entity.User;
-import com.dony.fcfs_store.entity.redis.TokenBlacklist;
-import com.dony.fcfs_store.exception.CustomException;
-import com.dony.fcfs_store.exception.ErrorCode;
 import com.dony.fcfs_store.repository.UserRepository;
 import com.dony.fcfs_store.repository.redis.TokenBlacklistRepository;
 import io.jsonwebtoken.*;
@@ -53,8 +50,7 @@ public class JwtUtil {
     }
 
     public Authentication getAuthentication(String token) {
-        Optional<TokenBlacklist> optionalTokenBlacklist = tokenBlacklistRepository.findById(token);
-        if (optionalTokenBlacklist.isPresent() && optionalTokenBlacklist.get().getAvailable()) {
+        if (tokenBlacklistRepository.findById(token).isPresent()) {
             Integer id = getId(token);
             User user = userRepository.findById(id).orElseThrow();
             return new UsernamePasswordAuthenticationToken(user, "", getAuthorities());

@@ -85,7 +85,7 @@ public class UserControllerTest {
                 .build();
         userRepository.save(testUser);
         token = jwtUtil.createToken(testUser.getId());
-        tokenBlacklistRepository.save(new TokenBlacklist(token, testUser.getId(), true));
+        tokenBlacklistRepository.save(new TokenBlacklist(token, testUser.getId()));
     }
 
     @Test
@@ -115,8 +115,7 @@ public class UserControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
         Optional<TokenBlacklist> tokenBlacklist = tokenBlacklistRepository.findById(token);
-        assertTrue(tokenBlacklist.isPresent());
-        assertFalse(tokenBlacklist.get().getAvailable());
+        assertTrue(tokenBlacklist.isEmpty());
     }
 
     @Test
@@ -162,6 +161,15 @@ public class UserControllerTest {
     public void testUpdatePassword() throws Exception {
         UpdatePasswordDto passwordDto = new UpdatePasswordDto("newpassword", "password");
 
+        String token2 = jwtUtil.createToken(testUser.getId());
+        tokenBlacklistRepository.save(new TokenBlacklist(token2, testUser.getId()));
+
+        mockMvc.perform(get("/user/my")
+                        .header("Authorization", "Bearer " + token2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(passwordDto)))
+                .andExpect(status().isOk());
+
         mockMvc.perform(patch("/user/my/password")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -170,6 +178,12 @@ public class UserControllerTest {
 
         mockMvc.perform(patch("/user/my/password")
                         .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(passwordDto)))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/user/my")
+                        .header("Authorization", "Bearer " + token2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(passwordDto)))
                 .andExpect(status().isForbidden());

@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -42,7 +44,7 @@ public class UserService {
 
         String token = jwtUtil.createToken(user.getId());
 
-        tokenBlacklistRepository.save(new TokenBlacklist(token, user.getId(), true));
+        tokenBlacklistRepository.save(new TokenBlacklist(token, user.getId()));
 
         return new TokenResponse(token);
     }
@@ -50,10 +52,7 @@ public class UserService {
     @Transactional
     public void logout(String token) {
         token = jwtUtil.resolveToken(token);
-        TokenBlacklist blacklist = tokenBlacklistRepository.findById(token)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-        blacklist.setAvailable(false);
-        tokenBlacklistRepository.save(blacklist);
+        tokenBlacklistRepository.deleteById(token);
     }
 
     public void createUser(UserRequestDto userDto) {
@@ -102,11 +101,8 @@ public class UserService {
         User user = authenticationFacade.getLoggedInUser();
         if (passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
             user.setPassword(dto.getNewPassword());
-            tokenBlacklistRepository.findAllByUserId(user.getId())
-                    .forEach(tokenBlacklist -> {
-                        tokenBlacklist.setAvailable(false);
-                        tokenBlacklistRepository.save(tokenBlacklist);
-                    });
+            List<TokenBlacklist> tokens = tokenBlacklistRepository.findAllByUserId(user.getId());
+            tokenBlacklistRepository.deleteAll(tokens);
         }
         else {
             throw new CustomException(ErrorCode.NOT_VALID_PASSWORD);

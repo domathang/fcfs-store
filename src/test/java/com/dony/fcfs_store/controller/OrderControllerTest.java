@@ -89,7 +89,7 @@ public class OrderControllerTest {
         userRepository.save(testUser);
 
         token = jwtUtil.createToken(testUser.getId());
-        tokenBlacklistRepository.save(new TokenBlacklist(token, testUser.getId(), true));
+        tokenBlacklistRepository.save(new TokenBlacklist(token, testUser.getId()));
 
         product = Product.builder()
                 .owner(testUser)

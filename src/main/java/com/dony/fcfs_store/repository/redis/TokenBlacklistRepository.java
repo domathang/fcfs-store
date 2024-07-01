@@ -7,5 +7,5 @@ import java.util.List;
 
 
 public interface TokenBlacklistRepository extends CrudRepository<TokenBlacklist, String> {
-    List<TokenBlacklist> findAllByUserId(Integer userId);
+   List<TokenBlacklist> findAllByUserId(Integer userId);
 }
