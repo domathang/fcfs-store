@@ -4,6 +4,7 @@ import com.dony.fcfs_store.constant.OrderProductStatus;
 import com.dony.fcfs_store.constant.OrderStatus;
 import com.dony.fcfs_store.dto.request.CartOrderRequestDto;
 import com.dony.fcfs_store.dto.request.QuantityRequestDto;
+import com.dony.fcfs_store.dto.response.CartProductResponse;
 import com.dony.fcfs_store.dto.response.OrderProductResponse;
 import com.dony.fcfs_store.dto.response.OrderStatusResponse;
 import com.dony.fcfs_store.entity.*;
@@ -12,13 +13,12 @@ import com.dony.fcfs_store.exception.ErrorCode;
 import com.dony.fcfs_store.repository.CartProductRepository;
 import com.dony.fcfs_store.repository.OrderProductRepository;
 import com.dony.fcfs_store.repository.OrderRepository;
-import com.dony.fcfs_store.repository.ProductRepository;
-import com.dony.fcfs_store.util.AuthenticationFacade;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,16 +28,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderProductRepository orderProductRepository;
     private final CartProductRepository cartProductRepository;
-    private final ProductRepository productRepository;
-    private final AuthenticationFacade authenticationFacade;
 
     @Transactional
     public void createOrder(Integer productId, QuantityRequestDto dto) {
-        User loggedinUser = authenticationFacade.getLoggedInUser();
-        Product product = findProductById(productId);
+//        User loggedInUser = authenticationFacade.getLoggedInUser();
+        Product product = new Product();
         //TODO: 재고가 남아있는지 확인
         Order order = orderRepository.save(Order.builder()
-                .customer(loggedinUser)
+//                .customer(loggedInUser)
                 .status(OrderStatus.ORDER_COMPLETED.status)
                 .build());
         orderProductRepository.save(OrderProduct.builder()
@@ -46,23 +44,24 @@ public class OrderService {
                 .quantity(dto.getQuantity())
                 .totalPrice(product.getPrice() * dto.getQuantity())
                 .build());
-        //TODO: 남은 Product의 재고 처리
+        //TODO: 남은 Product 의 재고 처리
     }
 
     @Transactional
     public void createCartOrder(CartOrderRequestDto dto) {
-        User loggedinUser = authenticationFacade.getLoggedInUser();
+//        User loggedInUser = authenticationFacade.getLoggedInUser();
 
         Order order = orderRepository.save(Order.builder()
-                .customer(loggedinUser)
+//                .customer(loggedInUser)
                 .status(OrderStatus.ORDER_COMPLETED.status)
                 .build());
 
         List<Integer> selectedCartProductIdList = dto.getCartProductIdList();
 
-        List<CartProduct> cartProducts = cartProductRepository.findByCustomerId(loggedinUser.getId()).stream().filter(
-                cartProduct -> selectedCartProductIdList.contains(cartProduct.getId())
-        ).toList();
+//        List<CartProduct> cartProducts = cartProductRepository.findByCustomerId(loggedInUser.getId()).stream().filter(
+//                cartProduct -> selectedCartProductIdList.contains(cartProduct.getId())
+//        ).toList();
+        List<CartProduct> cartProducts = new ArrayList<>();
 
         if (selectedCartProductIdList.size() > cartProducts.size())
             throw new CustomException(ErrorCode.BAD_REQUEST, "요청의 장바구니 상품 ID 리스트가 잘못됨");
@@ -76,7 +75,7 @@ public class OrderService {
                     .totalPrice(cartProduct.getProduct()
                             .getPrice() * cartProduct.getQuantity())
                     .build());
-            //TODO: 남은 Product의 재고 처리
+            //TODO: 남은 Product 의 재고 처리
         });
 
         cartProducts.forEach(cartProduct -> {
@@ -181,8 +180,34 @@ public class OrderService {
         });
     }
 
-    private Product findProductById(Integer id) {
-        return productRepository.findById(id)
+    public List<CartProductResponse> getMyCartProduct() {
+//        Integer loggedInUserId = authenticationFacade.getLoggedInUserId();
+        Integer loggedInUserId = 1;
+
+        return cartProductRepository.findByCustomerId(loggedInUserId)
+                .stream()
+                .map(cartProduct -> new CartProductResponse(cartProduct.getProduct(), cartProduct.getQuantity()))
+                .toList();
+    }
+
+    public void addToCart(Integer productId, QuantityRequestDto dto) {
+//        User loggedInUser = authenticationFacade.getLoggedInUser();
+        Product product = new Product();
+        cartProductRepository.save(CartProduct.builder()
+                .product(product)
+                .quantity(dto.getQuantity())
+//                .customer(loggedInUser)
+                .build());
+    }
+
+    @Transactional
+    public void changeCartProductQuantity(Integer cartProductId, QuantityRequestDto dto) {
+        CartProduct cartProduct = cartProductRepository.findById(cartProductId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        cartProduct.setQuantity(dto.getQuantity());
+    }
+
+    public void deleteCartProduct(Integer cartProductId) {
+        cartProductRepository.deleteById(cartProductId);
     }
 }
