@@ -29,27 +29,17 @@ subprojects {
 
 	dependencies {
 		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-		implementation 'org.springframework.boot:spring-boot-starter-security'
 		implementation 'org.springframework.boot:spring-boot-starter-web'
+		implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.2'
 
-		implementation 'io.jsonwebtoken:jjwt:0.12.3'
-
-		implementation 'javax.activation:activation:1.1-rev-1'
-		implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
-		implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.5'
-
-		implementation 'org.springframework.boot:spring-boot-starter-mail'
 		implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-		implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 		compileOnly 'org.projectlombok:lombok'
 		runtimeOnly 'com.mysql:mysql-connector-j'
 		annotationProcessor 'org.projectlombok:lombok'
+
 		testImplementation 'org.springframework.boot:spring-boot-starter-test'
 		testImplementation 'org.springframework.security:spring-security-test'
-
-		implementation ('it.ozimov:embedded-redis:0.7.3') { exclude group: "org.slf4j", module: "slf4j-simple" }
 
 		testRuntimeOnly 'com.h2database:h2'
 		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -68,13 +58,4 @@ subprojects {
 	test {
 		useJUnitPlatform()
 	}
-}
-
-project(':module-user') {
-}
-
-project(':module-product') {
-}
-
-project(':module-order') {
 }
