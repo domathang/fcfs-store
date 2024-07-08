@@ -25,7 +25,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         http.csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/auth", "/verify", "/user", "/login")
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/auth/**", "/verify", "/user", "/login")
                         .permitAll()
                         .requestMatchers(CorsUtils::isPreFlightRequest)
                         .permitAll()

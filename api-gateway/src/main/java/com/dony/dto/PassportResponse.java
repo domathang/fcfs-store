@@ -1,4 +1,4 @@
-package com.dony.fcfs_store.dto.response;
+package com.dony.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

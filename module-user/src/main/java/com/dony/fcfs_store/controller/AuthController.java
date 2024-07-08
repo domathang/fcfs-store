@@ -23,7 +23,7 @@ public class AuthController {
         authService.verify(token);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public TokenDto login(@RequestBody LoginDto dto) {
         return authService.login(dto);
     }
@@ -33,8 +33,13 @@ public class AuthController {
         authService.logout(token);
     }
 
-    @PostMapping("/auth/passport")
-    public PassportResponse getPassportByAccessToken(@RequestBody TokenDto tokenDto) {
-        return authService.getUserPassportByAccessToken(tokenDto);
+    @GetMapping("/auth/passport/{id}")
+    public PassportResponse getPassportByAccessToken(@PathVariable Integer id) {
+        return authService.getUserPassportByAccessToken(id);
     }
+
+//    @GetMapping("/auth/test")
+//    public void test(@RequestHeader("X-Passport") String passport) {
+//        System.out.println(passport);
+//    }
 }

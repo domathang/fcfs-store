@@ -102,16 +102,15 @@ public class AuthService {
         tokenBlacklistRepository.deleteById(token);
     }
 
-    public PassportResponse getUserPassportByAccessToken(TokenDto token) {
-        String jwtToken = jwtUtil.resolveToken(token.getAccessToken());
-        Integer id = jwtUtil.getId(jwtToken);
+    public PassportResponse getUserPassportByAccessToken(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
         return PassportResponse.builder()
                 .id(id)
-                .email(user.getEmail())
-                .address(user.getAddress())
-                .phone(user.getPhone())
+                .username(cryptoUtil.decrypt(user.getUsername()))
+                .email(cryptoUtil.decrypt(user.getEmail()))
+                .address(cryptoUtil.decrypt(user.getAddress()))
+                .phone(cryptoUtil.decrypt(user.getPhone()))
                 .build();
     }
 }
