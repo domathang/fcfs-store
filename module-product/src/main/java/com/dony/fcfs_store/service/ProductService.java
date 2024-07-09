@@ -1,10 +1,10 @@
 package com.dony.fcfs_store.service;
 
+import com.dony.common.exception.CustomException;
+import com.dony.common.exception.ErrorCode;
 import com.dony.fcfs_store.dto.request.ProductRequestDto;
 import com.dony.fcfs_store.dto.response.ProductResponseDto;
 import com.dony.fcfs_store.entity.Product;
-import com.dony.fcfs_store.exception.CustomException;
-import com.dony.fcfs_store.exception.ErrorCode;
 import com.dony.fcfs_store.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

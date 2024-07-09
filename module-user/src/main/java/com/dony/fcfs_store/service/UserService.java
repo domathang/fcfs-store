@@ -1,12 +1,12 @@
 package com.dony.fcfs_store.service;
 
+import com.dony.common.exception.CustomException;
+import com.dony.common.exception.ErrorCode;
 import com.dony.fcfs_store.dto.request.UpdatePasswordDto;
 import com.dony.fcfs_store.dto.request.UserRequestDto;
 import com.dony.fcfs_store.dto.response.UserResponseDto;
 import com.dony.fcfs_store.entity.User;
 import com.dony.fcfs_store.entity.redis.TokenBlacklist;
-import com.dony.fcfs_store.exception.CustomException;
-import com.dony.fcfs_store.exception.ErrorCode;
 import com.dony.fcfs_store.repository.UserRepository;
 import com.dony.fcfs_store.repository.redis.EmailAvailableRepository;
 import com.dony.fcfs_store.repository.redis.TokenBlacklistRepository;

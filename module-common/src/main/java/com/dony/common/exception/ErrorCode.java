@@ -1,4 +1,4 @@
-package com.dony.fcfs_store.exception;
+package com.dony.common.exception;
 
 import lombok.Getter;
 

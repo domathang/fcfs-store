@@ -1,8 +1,8 @@
 package com.dony.fcfs_store.util;
 
+import com.dony.common.exception.CustomException;
+import com.dony.common.exception.ErrorCode;
 import com.dony.fcfs_store.entity.User;
-import com.dony.fcfs_store.exception.CustomException;
-import com.dony.fcfs_store.exception.ErrorCode;
 import com.dony.fcfs_store.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

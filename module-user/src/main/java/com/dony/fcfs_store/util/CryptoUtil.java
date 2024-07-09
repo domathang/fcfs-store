@@ -1,7 +1,7 @@
 package com.dony.fcfs_store.util;
 
-import com.dony.fcfs_store.exception.CustomException;
-import com.dony.fcfs_store.exception.ErrorCode;
+import com.dony.common.exception.CustomException;
+import com.dony.common.exception.ErrorCode;
 import io.jsonwebtoken.io.Decoders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

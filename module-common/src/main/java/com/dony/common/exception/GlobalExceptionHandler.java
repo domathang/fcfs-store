@@ -1,4 +1,4 @@
-package com.dony.fcfs_store.exception;
+package com.dony.common.exception;
 
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
-        ErrorResponse errorResponse = new ErrorResponse(e.getErrorCode(), e.getDetail());
+    public ResponseEntity<ErrorResponse> handleCustomException(
+            CustomException e) {
+        ErrorResponse errorResponse = new com.dony.common.exception.ErrorResponse(e.getErrorCode(), e.getDetail());
         return new ResponseEntity<>(errorResponse, HttpStatusCode.valueOf(e.getErrorCode()
                 .getHttpStatus()));
     }
