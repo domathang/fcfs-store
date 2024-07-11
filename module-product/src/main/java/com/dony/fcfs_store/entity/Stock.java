@@ -13,13 +13,14 @@ import lombok.*;
 public class Stock {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "product_id", nullable = false)
     private Integer id;
 
-    @Setter
-    private Integer stock;
-
+    @MapsId
     @OneToOne
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @Setter
+    private Integer stock;
 }

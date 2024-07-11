@@ -20,12 +20,12 @@ public class ProductResponseDto {
     private LocalDateTime saleStartTime;
     private LocalDateTime registeredAt;
 
-    public ProductResponseDto(Product product) {
+    public ProductResponseDto(Product product, Integer stock) {
         this.id = product.getId();
         this.name = product.getName();
         this.price = product.getPrice();
         this.imageUrl = product.getImageUrl();
-        this.stock = product.getStock();
+        this.stock = stock;
         this.detail = product.getDetail();
         this.saleStartTime = product.getSaleStartTime();
         this.registeredAt = product.getRegisteredAt();

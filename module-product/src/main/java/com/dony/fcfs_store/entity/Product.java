@@ -25,28 +25,17 @@ public class Product {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Setter //TODO: 삭제
-    private Integer stock;
-
     @CreatedDate
     @Column(name = "registered_at")
     private LocalDateTime registeredAt;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
+    private Integer ownerId;
 
     private String detail;
 
     @Column(name = "sale_start_time")
     private LocalDateTime saleStartTime;
 
-//    @OneToOne(mappedBy = "product")
-//    private Stock stock;
-
-    @OneToMany(mappedBy = "product")
-    private List<OrderProduct> orderProducts;
-
-    @OneToMany(mappedBy = "product")
-    private List<CartProduct> cartProducts;
+    @OneToOne(mappedBy = "product")
+    private Stock stock;
 }
