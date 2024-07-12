@@ -23,9 +23,7 @@ public class Order {
     @CreatedDate
     private LocalDateTime orderedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private User customer;
+    private Integer customerId;
 
     @Setter
     private String status;

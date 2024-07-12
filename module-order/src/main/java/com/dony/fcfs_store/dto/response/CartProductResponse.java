@@ -1,6 +1,5 @@
 package com.dony.fcfs_store.dto.response;
 
-import com.dony.fcfs_store.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +18,7 @@ public class CartProductResponse {
     private String imageUrl;
     private LocalDateTime saleStartTime;
 
-    public CartProductResponse(Product product, Integer quantity) {
+    public CartProductResponse(ProductResponse product, Integer quantity) {
         this.productId = product.getId();
         this.name = product.getName();
         this.price = product.getPrice();

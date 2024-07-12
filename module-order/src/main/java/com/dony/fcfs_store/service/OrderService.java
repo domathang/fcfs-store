@@ -1,5 +1,9 @@
 package com.dony.fcfs_store.service;
 
+import com.dony.common.exception.CustomException;
+import com.dony.common.exception.ErrorCode;
+import com.dony.common.passport.UserContext;
+import com.dony.fcfs_store.client.ApiClient;
 import com.dony.fcfs_store.constant.OrderProductStatus;
 import com.dony.fcfs_store.constant.OrderStatus;
 import com.dony.fcfs_store.dto.request.CartOrderRequestDto;
@@ -7,9 +11,8 @@ import com.dony.fcfs_store.dto.request.QuantityRequestDto;
 import com.dony.fcfs_store.dto.response.CartProductResponse;
 import com.dony.fcfs_store.dto.response.OrderProductResponse;
 import com.dony.fcfs_store.dto.response.OrderStatusResponse;
+import com.dony.fcfs_store.dto.response.ProductResponse;
 import com.dony.fcfs_store.entity.*;
-import com.dony.fcfs_store.exception.CustomException;
-import com.dony.fcfs_store.exception.ErrorCode;
 import com.dony.fcfs_store.repository.CartProductRepository;
 import com.dony.fcfs_store.repository.OrderProductRepository;
 import com.dony.fcfs_store.repository.OrderRepository;
@@ -18,9 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import static java.util.Objects.equals;
 
 @Service
 @RequiredArgsConstructor
@@ -28,19 +30,21 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderProductRepository orderProductRepository;
     private final CartProductRepository cartProductRepository;
+    private final ApiClient apiClient;
 
     @Transactional
     public void createOrder(Integer productId, QuantityRequestDto dto) {
-//        User loggedInUser = authenticationFacade.getLoggedInUser();
-        Product product = new Product();
+        UserContext currentUser = UserContext.getCurrentUser();
+        ProductResponse product = apiClient.getProduct(productId);
+
         //TODO: 재고가 남아있는지 확인
         Order order = orderRepository.save(Order.builder()
-//                .customer(loggedInUser)
+                .customerId(currentUser.getUserId())
                 .status(OrderStatus.ORDER_COMPLETED.status)
                 .build());
         orderProductRepository.save(OrderProduct.builder()
                 .order(order)
-                .product(product)
+                .productId(productId)
                 .quantity(dto.getQuantity())
                 .totalPrice(product.getPrice() * dto.getQuantity())
                 .build());
@@ -49,19 +53,18 @@ public class OrderService {
 
     @Transactional
     public void createCartOrder(CartOrderRequestDto dto) {
-//        User loggedInUser = authenticationFacade.getLoggedInUser();
+        UserContext currentUser = UserContext.getCurrentUser();
 
         Order order = orderRepository.save(Order.builder()
-//                .customer(loggedInUser)
+                .customerId(currentUser.getUserId())
                 .status(OrderStatus.ORDER_COMPLETED.status)
                 .build());
 
         List<Integer> selectedCartProductIdList = dto.getCartProductIdList();
 
-//        List<CartProduct> cartProducts = cartProductRepository.findByCustomerId(loggedInUser.getId()).stream().filter(
-//                cartProduct -> selectedCartProductIdList.contains(cartProduct.getId())
-//        ).toList();
-        List<CartProduct> cartProducts = new ArrayList<>();
+        List<CartProduct> cartProducts = cartProductRepository.findByCustomerId(currentUser.getUserId()).stream().filter(
+                cartProduct -> selectedCartProductIdList.contains(cartProduct.getId())
+        ).toList();
 
         if (selectedCartProductIdList.size() > cartProducts.size())
             throw new CustomException(ErrorCode.BAD_REQUEST, "요청의 장바구니 상품 ID 리스트가 잘못됨");
@@ -70,10 +73,8 @@ public class OrderService {
             //TODO: 재고가 남아있는지 확인
             orderProductRepository.save(OrderProduct.builder()
                     .order(order)
-                    .product(cartProduct.getProduct())
+                    .productId(cartProduct.getProductId())
                     .quantity(cartProduct.getQuantity())
-                    .totalPrice(cartProduct.getProduct()
-                            .getPrice() * cartProduct.getQuantity())
                     .build());
             //TODO: 남은 Product 의 재고 처리
         });
@@ -101,13 +102,14 @@ public class OrderService {
 
         List<OrderProductResponse> orderProductList = order.getOrderProducts()
                 .stream()
-                .map(orderProduct -> OrderProductResponse.builder()
-                        .productName(orderProduct.getProduct()
-                                .getName())
-                        .price(orderProduct.getProduct()
-                                .getPrice())
-                        .quantity(orderProduct.getQuantity())
-                        .build())
+                .map(orderProduct -> {
+                    ProductResponse product = apiClient.getProduct(orderProduct.getProductId());
+                    return OrderProductResponse.builder()
+                            .productName(product.getName())
+                            .price(product.getPrice())
+                            .quantity(orderProduct.getQuantity())
+                            .build();
+                })
                 .toList();
 
         return OrderStatusResponse.builder()
@@ -132,8 +134,8 @@ public class OrderService {
 
         order.getOrderProducts()
                 .forEach(orderProduct -> {
-                    Product product = orderProduct.getProduct();
-                    product.setStock(product.getStock() + orderProduct.getQuantity());
+                    ProductResponse product = apiClient.getProduct(orderProduct.getProductId());
+                    //TODO: 취소된 Product 의 재고 처리
                 });
     }
 
@@ -156,8 +158,7 @@ public class OrderService {
         if (order.getStatus().equals(OrderStatus.DELIVERY_COMPLETE.status) &&
                 order.getDeliveryCompletedAt().plusDays(1).isAfter(LocalDateTime.now())) {
             order.getOrderProducts().forEach(orderProduct -> {
-                if (Objects.equals(orderProduct.getProduct()
-                        .getId(), productId)) {
+                if (orderProduct.getProductId().equals(productId)) {
                     orderProduct.setStatus(OrderProductStatus.RETURN_ACCEPTED.status);
                     orderProduct.setReturnAcceptedAt(LocalDateTime.now());
                 }
@@ -175,28 +176,27 @@ public class OrderService {
             if (LocalDateTime.now().isAfter(orderProduct.getReturnAcceptedAt().plusDays(1))) {
                 orderProduct.setStatus(OrderProductStatus.RETURN_COMPLETED.status);
                 orderProduct.setReturnCompletedAt(LocalDateTime.now());
-                orderProduct.getProduct().setStock(orderProduct.getProduct().getStock() + orderProduct.getQuantity());
+                //TODO: 반품 완료된 Product 의 재고 처리
+//                orderProduct.getProduct().setStock(orderProduct.getProduct().getStock() + orderProduct.getQuantity());
             }
         });
     }
 
     public List<CartProductResponse> getMyCartProduct() {
-//        Integer loggedInUserId = authenticationFacade.getLoggedInUserId();
-        Integer loggedInUserId = 1;
+        UserContext currentUser = UserContext.getCurrentUser();
 
-        return cartProductRepository.findByCustomerId(loggedInUserId)
+        return cartProductRepository.findByCustomerId(currentUser.getUserId())
                 .stream()
-                .map(cartProduct -> new CartProductResponse(cartProduct.getProduct(), cartProduct.getQuantity()))
+                .map(cartProduct -> new CartProductResponse(apiClient.getProduct(cartProduct.getProductId()), cartProduct.getQuantity()))
                 .toList();
     }
 
     public void addToCart(Integer productId, QuantityRequestDto dto) {
-//        User loggedInUser = authenticationFacade.getLoggedInUser();
-        Product product = new Product();
+        UserContext currentUser = UserContext.getCurrentUser();
         cartProductRepository.save(CartProduct.builder()
-                .product(product)
+                .productId(productId)
                 .quantity(dto.getQuantity())
-//                .customer(loggedInUser)
+                .customerId(currentUser.getUserId())
                 .build());
     }
 

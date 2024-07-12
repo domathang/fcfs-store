@@ -17,13 +17,9 @@ public class OrderProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
+    private Integer productId;
 
     private Integer quantity;
-
-    private Integer totalPrice;
 
     @Setter
     private String status;
