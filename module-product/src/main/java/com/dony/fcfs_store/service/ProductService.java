@@ -43,7 +43,7 @@ public class ProductService {
     }
 
     public List<ProductResponseDto> getOpendProductList() {
-        return productRepository.findByStockGreaterThanAndSaleStartTimeBefore(0, LocalDateTime.now())
+        return productRepository.findBySaleStartTimeBefore(LocalDateTime.now())
                 .stream()
                 .map(product -> new ProductResponseDto(product, findStockByProductId(product.getId()).getId()))
                 .toList();

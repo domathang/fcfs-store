@@ -28,18 +28,6 @@ subprojects {
 	apply plugin: 'io.spring.dependency-management'
 
 	dependencies {
-		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-		implementation 'org.springframework.boot:spring-boot-starter-web'
-		implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.2'
-
-		implementation 'io.jsonwebtoken:jjwt:0.12.3'
-
-		implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-		compileOnly 'org.projectlombok:lombok'
-		runtimeOnly 'com.mysql:mysql-connector-j'
-		annotationProcessor 'org.projectlombok:lombok'
-
 		testImplementation 'org.springframework.boot:spring-boot-starter-test'
 		testImplementation 'org.springframework.security:spring-security-test'
 
@@ -53,12 +41,14 @@ subprojects {
 		}
 	}
 
-	repositories {
-		mavenCentral()
-	}
-
 	test {
 		useJUnitPlatform()
+	}
+
+	dependencyManagement {
+		imports {
+			mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.2"
+		}
 	}
 }
 

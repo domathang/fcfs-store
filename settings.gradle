@@ -4,4 +4,4 @@ include 'module-product'
 include 'module-order'
 include 'api-gateway'
 include 'module-common'
-
+include 'eureka'

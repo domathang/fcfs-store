@@ -7,5 +7,5 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
-    List<Product> findByStockGreaterThanAndSaleStartTimeBefore(Integer quantity, LocalDateTime now);
+    List<Product> findBySaleStartTimeBefore(LocalDateTime now);
 }

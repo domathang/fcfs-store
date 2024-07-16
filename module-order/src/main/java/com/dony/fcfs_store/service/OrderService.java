@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import static java.util.Objects.equals;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +45,6 @@ public class OrderService {
                 .order(order)
                 .productId(productId)
                 .quantity(dto.getQuantity())
-                .totalPrice(product.getPrice() * dto.getQuantity())
                 .build());
         //TODO: 남은 Product 의 재고 처리
     }

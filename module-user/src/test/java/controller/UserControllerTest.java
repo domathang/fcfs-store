@@ -101,7 +101,7 @@ public class UserControllerTest {
     public void testLogin() throws Exception {
         LoginDto loginDto = new LoginDto("test@example.com", "password");
 
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginDto)))
                 .andExpect(status().isOk())
@@ -112,7 +112,7 @@ public class UserControllerTest {
     public void testLoginFail() throws Exception {
         LoginDto loginDto = new LoginDto("test@example.com", "wrongpassword");
 
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginDto)))
                 .andExpect(status().isBadRequest());
